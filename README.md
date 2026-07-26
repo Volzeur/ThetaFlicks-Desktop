@@ -1,2 +1,2 @@
 # ThetaFlicks-Desktop
-Desktop build for ThetaFlicks
+ThetaFlicks' desktop app for Windows and Linux
