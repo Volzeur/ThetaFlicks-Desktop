@@ -1,0 +1,22 @@
+{
+  "name": "ThetaFlicks",
+  "version": "1.0.0",
+  "description": "Watch everything here",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "productName": "ThetaFlicks",
+    "appId": "com.new.thetaflicks",
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^40.8.0",
+    "electron-builder": "^26.8.1"
+  }
+}
