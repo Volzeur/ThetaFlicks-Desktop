@@ -4,7 +4,7 @@
 [![HTML](https://img.shields.io/badge/HTML-59.1%25-e34c26.svg)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-40.9%25-f7df1e.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
-ThetaFlicks-Desktop is a cross-platform desktop application for Windows and Linux that provides a native client for the ThetaFlicks service. It is built using Electron.js.
+Desktop app for Thetaflicks, built using electron.js.
 
 ---
 
