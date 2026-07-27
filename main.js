@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 
-const MAIN_URL = "https://backhost-thetaflicks.pages.dev/desktop";
+const MAIN_URL = "https://thetaflicks.vercel.app/desktop";
 const LOAD_TIMEOUT_MS = 15000; // 15 seconds before assuming the connection is too slow
 
 let isLoading = true;
@@ -14,7 +14,7 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
-      contextIsolation: true // Keeps your app secure
+      contextIsolation: true
     }
   });
 
@@ -22,7 +22,7 @@ function createWindow() {
 
   // Centralized function to handle loading the main URL with a timeout
   const startLoad = () => {
-    clearTimeout(loadTimeout); // Clear any existing timeout to prevent overlaps
+    clearTimeout(loadTimeout);
     isLoading = true;
     win.loadURL(MAIN_URL);
     
@@ -37,24 +37,25 @@ function createWindow() {
   // Initial load
   startLoad();
 
-  // 1. Successfully loaded
+  // 1. Successfully loaded (Main frame)
   win.webContents.on("did-finish-load", () => {
-    // Only mark as loaded if we are actually on the main HTTPS URL
     if (win.webContents.getURL().startsWith("https://")) {
       isLoading = false;
       clearTimeout(loadTimeout);
     }
   });
 
-  // 2. Failed to load (immediate offline, DNS error, etc.)
-  win.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
-    console.log("Failed to load:", errorCode, errorDescription);
+  // 2. Failed to load (ONLY if it's the main frame, ignoring iframes)
+  win.webContents.on("did-fail-load", (event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+    if (!isMainFrame) return; // <-- Fixed previous problem where an iframe trigger offline
+    
+    console.log("Main frame failed to load:", errorCode, errorDescription);
     isLoading = false;
     clearTimeout(loadTimeout);
     win.loadFile(path.join(__dirname, "offline.html"));
   });
 
-  // 3. Prevent unauthorized navigation (preserves your original logic)
+  // 3. Prevent unauthorized navigation
   win.webContents.on("will-navigate", (event, url) => {
     if (url !== win.webContents.getURL()) {
       event.preventDefault();
@@ -78,7 +79,6 @@ app.whenReady().then(createWindow);
 ipcMain.on("retry-load", (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (win) {
-    // Re-trigger the load process with the timeout
     const startLoad = () => {
       clearTimeout(loadTimeout);
       isLoading = true;
